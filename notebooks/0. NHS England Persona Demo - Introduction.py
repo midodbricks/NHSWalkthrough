@@ -1,12 +1,12 @@
 # Databricks notebook source
 # MAGIC %md-sandbox
-# MAGIC # Lakehouse for NHS - Day in the life
+# MAGIC # Lakehouse for NHS - Day in the life of a dataset
 # MAGIC <br />
 # MAGIC <img src="https://raw.githubusercontent.com/databricks-demos/dbdemos-resources/main/images/hls/patient-readmission/hls-patient-readmision-lakehouse-0.png" style="float: left; margin-right: 30px; margin-top:10px" width="650px" />
 # MAGIC
 # MAGIC ## What is The Databricks Lakehouse for NHS?
 # MAGIC
-# MAGIC It's the only enterprise data platform that allows you to leverage all your data, from any source, on any workload at the lowest cost.
+# MAGIC It's the only enterprise data platform that allows NHS data engineers, analysts and data scientists to ingest, transform, publish and serve data in an open, secure, cross cloud platform.
 # MAGIC
 # MAGIC ### 1. Simple
 # MAGIC   One single platform and governance/security layer for your data warehousing and AI to **accelerate innovation** and **reduce risks**. No need to stitch together multiple solutions with disparate governance and high complexity.
@@ -23,8 +23,10 @@
 # COMMAND ----------
 
 # MAGIC %md-sandbox
-# MAGIC ## DEMO: Hospital Episode Statistics Simulator
-# MAGIC Showing a typical flow of data into NHS England, associated cleansing, analysis and serving
+# MAGIC ## DEMO: NHS England Data Flow Demonstrator
+# MAGIC Showing an example flow of data into NHS England, associated cleansing, analysis and serving
+# MAGIC
+# MAGIC This example simulates a flow of data from disparate sources inside the NHS ecosystem to help deliver on the following:
 # MAGIC
 # MAGIC ***Higher Quality Care:***
 # MAGIC It enables hospitals to enhance patient care by proactively identifying individuals at a higher risk of readmission. By identifying these patients early on, healthcare providers can implement targeted interventions, such as personalized discharge plans, medication adherence support, or follow-up appointments, to mitigate the likelihood of readmissions.
@@ -40,10 +42,10 @@
 # MAGIC
 # MAGIC ### What we will build
 # MAGIC
-# MAGIC To predict patient re-admissions, we'll build an end-to-end solution with the Lakehouse, leveraging data from external and internal systems: patient demographics, logitudinal health records (past visits, conditions, allergies, etc), and real-time patient admission, discharge, transofrm (ADT) information...  
+# MAGIC To predict patient re-admissions, we'll build an end-to-end solution with the Lakehouse, leveraging data from UDAL and the SDE: patient demographics, logitudinal health records (past visits, conditions, allergies, etc), and real-time patient admission, discharge, transofrm (ADT) information...  
 # MAGIC
 # MAGIC At a high level, we will implement the following flow:
-# MAGIC
+# MAGIC <br/><br/>
 # MAGIC
 # MAGIC <style>
 # MAGIC .right_box{
@@ -57,13 +59,13 @@
 # MAGIC
 # MAGIC
 # MAGIC <div style="margin-left: 20px">
-# MAGIC   <div class="badge_b"><div class="badge">1</div> Ingest all the various sources of data and create our longitudinal health records database (based on OMOP CDM) (<strong>unification of data</strong>) </div>
-# MAGIC   <div class="badge_b"><div class="badge">2</div>  Secure data and grant read access to the Data Analyst and Data Science teams, including row- and column-level filtering, PHI data masking, and others (<strong>data security and control</strong>). Use the Databricks unified <strong>data lineage</strong> to understand how your data flows and is used in your organisation</div>
-# MAGIC   <div class="badge_b"><div class="badge">4</div> Run BI  queries and EDA to analyze population-level trends</div>
-# MAGIC   <div class="badge_b"><div class="badge">5</div>  Build ML model to <strong>predict readmission risk</strong> and deploy ML models for real-time serving</div>
+# MAGIC   <div class="badge_b"><div class="badge">1</div> Connect to data store in NHS data stores, in this example - UDAL and the SDE and leveraging tools such as Lakehouse Federation to remove data duplication and Lakehouse Assistant to improve productivity</div>
+# MAGIC   <div class="badge_b"><div class="badge">2</div>  Provide access for our business analysts to ask natural language questions of our data to obtain insights</div>
+# MAGIC   <div class="badge_b"><div class="badge">4</div> Intuitively create and train predictive models using AutoML</div>
+# MAGIC   <div class="badge_b"><div class="badge">5</div>  Securely share data both internaly and externally without data movement</div>
 # MAGIC </div>
 # MAGIC <br/><br/>
-# MAGIC <img width="1250px" src="https://raw.githubusercontent.com/databricks-demos/dbdemos-resources/main/images/hls/patient-readmission/hls-patient-readmision-lakehouse.png" />
+# MAGIC <img src ='/files/mido/images/flow'>
 
 # COMMAND ----------
 
@@ -75,27 +77,26 @@
 # MAGIC
 # MAGIC <br/>
 # MAGIC <div style="padding-left: 420px">
-# MAGIC Our first step is to ingest and clean the raw data we received so that our Data Analyst team can start running analysis on top of it.
+# MAGIC Our first step is to connect to our data across the NHS estate, in this case we'll use lakehouse federation to connect to UDAL inside NHS Englands's Azure tenant and and join it with data inside the former NHS Digital's AWS-based Secure Data Environment
 # MAGIC
 # MAGIC
 # MAGIC <img src="https://pages.databricks.com/rs/094-YMS-629/images/delta-lake-logo.png" style="float: right; margin-top: 20px" width="200px">
 # MAGIC
-# MAGIC ### Delta Lake
+# MAGIC ### Databricks Notebooks
 # MAGIC
-# MAGIC All the tables we'll create in the Lakehouse will be stored as Delta Lake table. [Delta Lake](https://delta.io) is an open storage framework for reliability and performance. <br/>
-# MAGIC It provides many functionalities *(ACID Transaction, DELETE/UPDATE/MERGE, Clone zero copy, Change data Capture...)* <br />
-# MAGIC For more details on Delta Lake, run `dbdemos.install('delta-lake')`
+# MAGIC We'll use Lakehouse Assistant to help our data engineer build the data pipelines in the language of their choosing, build code quickly and efficiently and help fix any errors
 # MAGIC
-# MAGIC ### Simplify ingestion with Delta Live Tables (DLT)
+# MAGIC ### Lakehouse Assistant
 # MAGIC
-# MAGIC Databricks simplifies data ingestion and transformation with Delta Live Tables by allowing SQL users to create advanced pipelines, in batch or streaming. The engine will simplify pipeline deployment and testing and reduce operational complexity, so that you can focus on your business transformation and ensure data quality.<br/>
+# MAGIC We'll use Lakehouse Assistant to help our data engineer build the data pipelines in the language of their choosing, build code quickly and efficiently and help fix any errors
+# MAGIC
+# MAGIC <br/>
 
 # COMMAND ----------
 
 # MAGIC %md 
 # MAGIC
-# MAGIC Open the HLS patient readmission  <a dbdemos-pipeline-id="dlt-patient-readmission" href="#joblist/pipelines/546918ce-f4a2-470e-9298-9e1465315d27" target="_blank">Delta Live Table pipeline</a> or the [SQL notebook]($./01-Data-Ingestion/01.1-DLT-patient-readmission-SQL) *(python DLT notebook alternative coming soon).* <br>
-# MAGIC   For more details on DLT: `dbdemos.install('dlt-loan')` or `dbdemos.install('dlt-cdc')`
+# MAGIC Open the NHS Data Engineer Persona [notebook](https://adb-984752964297111.11.azuredatabricks.net/?o=984752964297111#notebook/2619274335399317/command/2619274335399318) 
 
 # COMMAND ----------
 
@@ -107,10 +108,11 @@
 # MAGIC <br/><br/><br/>
 # MAGIC <div style="padding-left: 420px">
 # MAGIC
-# MAGIC   Now that our data has been ingested, we can explore the catalogs and schemas created using the [Data Explorer](/explore/data/dbdemos/fsi_credit_decisioning). 
+# MAGIC   Now that our data has been ingested into UDAL, we can explore the catalogs and schemas created using the [Data Explorer](/explore/data/dbdemos/fsi_credit_decisioning). 
 # MAGIC
 # MAGIC To leverage our data assets across the entire organization, we need:
 # MAGIC
+# MAGIC * AI Generated documentation
 # MAGIC * Fine grained ACLs for our Analysts & Data Scientists teams
 # MAGIC * Lineage between all our data assets
 # MAGIC * real-time PII data encryption 
@@ -122,16 +124,8 @@
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC
-# MAGIC Open the [Unity Catalog notebook](https://adb-984752964297111.11.azuredatabricks.net/?o=984752964297111#notebook/1522098532272723) to see how to setup ACL and explore lineage with the Data Explorer.
-# MAGIC
-# MAGIC   
-
-# COMMAND ----------
-
 # MAGIC %md-sandbox
-# MAGIC ## 3/ Analyse patient and build cohorts dashboards (BI / Data warehousing / SQL) 
+# MAGIC ## 3/ Perform ad hoc analysis with natural language with Genie Workspaces
 # MAGIC
 # MAGIC <img width="500px" src="https://github.com/QuentinAmbard/databricks-demo/raw/main/hls/resources/dbinterop/hls-patient-dashboard.png"  style="float: right; margin: 0px 0px 10px;"/>
 # MAGIC
@@ -141,13 +135,13 @@
 # MAGIC <br><br>
 # MAGIC Our datasets are now properly ingested, secured, with a high quality and easily discoverable within our organization.
 # MAGIC
-# MAGIC Data Analysts are now ready to run adhoc analysis, building custom cohort on top of the existing data. In addition, Databricks provides BI interactive queries, with low latencies & high througput, including Serverless Datawarehouses providing instant stop & start.
+# MAGIC Business Users are now ready to run adhoc analysis, asking natural language questions of our data and producing insights, outputs and visualisations.
 
 # COMMAND ----------
 
 # MAGIC %md 
 # MAGIC
-# MAGIC Open the [Clinical Data Analysis notebook]($./03-Data-Analysis-BI-Warehousing/03-Data-Analysis-BI-Warehousing-patient-readmission) to start building your cohorts or directly open the <a href="/sql/dashboards/40b7bf53-9bd6-47de-90d0-1cb11eeb6430" target="_blank">Patient analysis dashboard</a>
+# MAGIC Open the [NHS Genie Workspace](https://adb-984752964297111.11.azuredatabricks.net/?o=984752964297111#notebook/2619274335419152/command/2619274335419153) to start interacting with our published dataset</a>
 
 # COMMAND ----------
 
@@ -168,13 +162,8 @@
 # MAGIC %md
 # MAGIC #### Machine Learning next steps:
 # MAGIC
-# MAGIC * [04.1-Feature-Engineering-patient-readmission]($./04-Data-Science-ML/04.1-Feature-Engineering-patient-readmission): Open the first notebook to analyze our data and start building our model leveraging Databricks AutoML.
-# MAGIC * [04.2-AutoML-patient-admission-risk]($./04-Data-Science-ML/04.2-AutoML-patient-admission-risk): Leverage AutoML to accelerate your model creation.
-# MAGIC * [04.3-Batch-Scoring-patient-readmission]($./04-Data-Science-ML/04.3-Batch-Scoring-patient-readmission): score our entire dataset and save the result as a new delta table for downstream usage.
-# MAGIC * [04.4-Model-Serving-patient-readmission]($./04-Data-Science-ML/04.4-Model-Serving-patient-readmission): leverage Databricks Serverless model serving to deploy instant risk evaluation and personalization.
-# MAGIC * [04.5-Explainability-patient-readmission]($./04-Data-Science-ML/04.5-Explainability-patient-readmission): Explain your model and provide specialized care.
-# MAGIC Extra:
-# MAGIC * [04.6-EXTRA-Feature-Store-ML-patient-readmission]($./04-Data-Science-ML/04.6-EXTRA-Feature-Store-ML-patient-readmission): Discover how to leverage Databricks Feature Store to create and share Feature tables with your entire organization.
+# MAGIC [04.1-Feature-Engineering-patient-readmission](https://adb-984752964297111.11.azuredatabricks.net/?o=984752964297111#notebook/2619274335419569/command/2619274335419611): Open the first notebook to analyze our data and start building our model leveraging Databricks AutoML.
+# MAGIC
 
 # COMMAND ----------
 

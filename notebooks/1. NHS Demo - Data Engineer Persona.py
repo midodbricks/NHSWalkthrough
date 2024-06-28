@@ -26,6 +26,16 @@
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC 1. Ingest data from the nhs_demos.mido_pixel_fhir_demo.person table
+# MAGIC 2. Infer the json schema from the name column
+# MAGIC 3. Add a new column representing the fully exploded name column
+# MAGIC 4. Save it as a SQL view so I can use later on
+
+# COMMAND ----------
+
+#here's one I made earlier...
+
 from pyspark.sql.functions import col, explode, from_json, schema_of_json
 
 person_df = spark.table("nhs_demos.mido_pixel_fhir_demo.person")
@@ -49,6 +59,12 @@ person_df.createOrReplaceTempView("vperson")
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC
+# MAGIC extract for me the person_id, the gender_source_value and the family field from vperson
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC
 # MAGIC --now query out in SQL
@@ -64,6 +80,12 @@ person_df.createOrReplaceTempView("vperson")
 # MAGIC SELECT person_id, gender_source_value, exploded.family AS Person_Name
 # MAGIC FROM vperson
 # MAGIC LATERAL VIEW explode(vperson.fullname) AS exploded
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC
+# MAGIC ok, now join vperson nhs_udal_synapse.dbo.udal_condition on person_id and created a new table in nhs_demos.nhs_england_analytics_demo called person_conditions
 
 # COMMAND ----------
 
