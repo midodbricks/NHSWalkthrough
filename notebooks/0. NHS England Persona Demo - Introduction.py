@@ -42,7 +42,7 @@
 # MAGIC
 # MAGIC ### What we will build
 # MAGIC
-# MAGIC To predict patient re-admissions, we'll build an end-to-end solution with the Lakehouse, leveraging data from UDAL and the SDE: patient demographics, logitudinal health records (past visits, conditions, allergies, etc), and real-time patient admission, discharge, transofrm (ADT) information...  
+# MAGIC To predict patient re-admissions, we'll build an end-to-end solution with the Lakehouse, leveraging data from the SDE and the other simulated NHS platforms: patient demographics, logitudinal health records (past visits, conditions, allergies, etc), and real-time patient admission, discharge, transofrm (ADT) information...  
 # MAGIC
 # MAGIC At a high level, we will implement the following flow:
 # MAGIC <br/><br/>
@@ -59,13 +59,13 @@
 # MAGIC
 # MAGIC
 # MAGIC <div style="margin-left: 20px">
-# MAGIC   <div class="badge_b"><div class="badge">1</div> Connect to data store in NHS data stores, in this example - UDAL and the SDE and leveraging tools such as Lakehouse Federation to remove data duplication and Lakehouse Assistant to improve productivity</div>
+# MAGIC   <div class="badge_b"><div class="badge">1</div> Connect to data store in NHS data stores, in this example - the SDE/CDP an other platforms such as UDAL and leveraging tools such as Lakehouse Federation to remove data duplication and Lakehouse Assistant to improve productivity</div>
 # MAGIC   <div class="badge_b"><div class="badge">2</div>  Provide access for our business analysts to ask natural language questions of our data to obtain insights</div>
-# MAGIC   <div class="badge_b"><div class="badge">4</div> Intuitively create and train predictive models using AutoML</div>
-# MAGIC   <div class="badge_b"><div class="badge">5</div>  Securely share data both internaly and externally without data movement</div>
+# MAGIC   <div class="badge_b"><div class="badge">3</div> Create powerful GenAI powered applications and models</div>
+# MAGIC   <div class="badge_b"><div class="badge">4</div>  Securely share data both internaly and externally without data movement</div>
 # MAGIC </div>
 # MAGIC <br/><br/>
-# MAGIC <img src ='/files/mido/images/flow'>
+# MAGIC <img src ='/files/mido/images/flow2'>
 
 # COMMAND ----------
 
@@ -77,7 +77,7 @@
 # MAGIC
 # MAGIC <br/>
 # MAGIC <div style="padding-left: 420px">
-# MAGIC Our first step is to connect to our data across the NHS estate, in this case we'll use lakehouse federation to connect to UDAL inside NHS Englands's Azure tenant and and join it with data inside the former NHS Digital's AWS-based Secure Data Environment
+# MAGIC Our first step is to connect to our data across the NHS estate, in this case we'll use lakehouse federation to connect to UDAL inside NHS Englands's Azure tenant and and join it with data inside the NHS England's AWS-based Secure Data Environment
 # MAGIC
 # MAGIC
 # MAGIC <img src="https://pages.databricks.com/rs/094-YMS-629/images/delta-lake-logo.png" style="float: right; margin-top: 20px" width="200px">
@@ -105,10 +105,10 @@
 # MAGIC
 # MAGIC <img style="float: left; margin-right: 20px" width="400px" src="https://raw.githubusercontent.com/databricks-demos/dbdemos-resources/main/images/hls/patient-readmission/hls-patient-readmision-lakehouse-6.png" />
 # MAGIC
-# MAGIC <br/><br/><br/>
+# MAGIC <br/><br/>
 # MAGIC <div style="padding-left: 420px">
 # MAGIC
-# MAGIC   Now that our data has been ingested into UDAL, we can explore the catalogs and schemas created using the [Data Explorer](/explore/data/dbdemos/fsi_credit_decisioning). 
+# MAGIC   Now that our data has been ingested into our environment, we can explore the catalogs and schemas created using the [Data Explorer](/explore/data/dbdemos/fsi_credit_decisioning). 
 # MAGIC
 # MAGIC To leverage our data assets across the entire organization, we need:
 # MAGIC
@@ -164,7 +164,3 @@
 # MAGIC
 # MAGIC [04.1-Feature-Engineering-patient-readmission](https://adb-984752964297111.11.azuredatabricks.net/?o=984752964297111#notebook/2619274335419569/command/2619274335419611): Open the first notebook to analyze our data and start building our model leveraging Databricks AutoML.
 # MAGIC
-
-# COMMAND ----------
-
-
